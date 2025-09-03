@@ -14,3 +14,27 @@ function getPageList() {
 }
 
 getPageList();
+
+document.querySelector("button").addEventListener("click", () => {
+  const name = document.querySelector("input").value;
+
+  fetch("http://localhost:3000/createPage", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: `name=${encodeURIComponent(name)}`,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Page already exists!");
+      }
+      return response.text();
+    })
+    .then(() => {
+      getPageList();
+    })
+    .catch(() => {
+      alert("Page already exists!");
+    });
+});

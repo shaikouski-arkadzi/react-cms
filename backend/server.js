@@ -29,6 +29,22 @@ app.get("/pages", async (req, res) => {
   }
 });
 
+app.post("/createPage", async (req, res) => {
+  try {
+    const name = req.body.name;
+    const filePath = path.join(dir, `${name}.html`);
+
+    if (fs.existsSync(filePath)) {
+      return res.status(400).send("File already exists");
+    }
+
+    await fs.promises.writeFile(filePath, "");
+    res.send("File created");
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
