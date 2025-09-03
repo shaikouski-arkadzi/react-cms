@@ -1,4 +1,4 @@
-/* eslint-env node */
+/* eslint-disable no-undef */
 import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
