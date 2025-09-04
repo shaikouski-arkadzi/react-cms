@@ -11,6 +11,7 @@
     "build-copy": "vite build && node copy.js"
   },
   "dependencies": {
+    "axios": "^1.11.0",
     "react": "^19.1.1"
   },
   "devDependencies": {
