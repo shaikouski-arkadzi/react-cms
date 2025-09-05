@@ -32,7 +32,7 @@ app.get("/pages", async (req, res) => {
 
 app.post("/createPage", async (req, res) => {
   try {
-    const name = req.body.name;
+    const { name } = req.body;
     const filePath = path.join(dir, `${name}.html`);
 
     if (fs.existsSync(filePath)) {
@@ -43,6 +43,23 @@ app.post("/createPage", async (req, res) => {
     res.send("File created");
   } catch (error) {
     res.status(500).send("Server error");
+  }
+});
+
+app.post("/deletePage", async (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).send("Bad Request: no file name");
+  }
+
+  const file = path.join(dir, name);
+
+  if (fs.existsSync(file)) {
+    fs.unlinkSync(file);
+    res.send("File deleted");
+  } else {
+    res.status(400).send("Bad Request: file not found");
   }
 });
 

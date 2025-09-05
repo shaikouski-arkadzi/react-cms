@@ -21,6 +21,13 @@ export default function Editor() {
       .catch(() => alert("Page already exists!"));
   };
 
+  const deletePage = (page) => {
+    axios
+      .post("http://localhost:3000/deletePage", { name: page })
+      .then(() => loadPageList())
+      .catch(() => alert("Page not exists"));
+  };
+
   useEffect(() => {
     loadPageList();
   }, []);
@@ -35,7 +42,12 @@ export default function Editor() {
       <button onClick={createNewPage}>Create page</button>
 
       {pageList.map((page, i) => (
-        <h2 key={i}>{page}</h2>
+        <h2 key={i}>
+          {page}
+          <a href="#" onClick={() => deletePage(page)}>
+            (x)
+          </a>
+        </h2>
       ))}
     </>
   );
