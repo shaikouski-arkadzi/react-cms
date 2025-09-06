@@ -16,14 +16,14 @@ export default function Editor() {
     console.log();
 
     axios
-      .post("http://localhost:3000/createPage", { name: newPageName })
+      .post("http://localhost:3000/pages/create", { name: newPageName })
       .then(() => loadPageList())
       .catch(() => alert("Page already exists!"));
   };
 
   const deletePage = (page) => {
     axios
-      .post("http://localhost:3000/deletePage", { name: page })
+      .post("http://localhost:3000/pages/delete", { name: page })
       .then(() => loadPageList())
       .catch(() => alert("Page not exists"));
   };
