@@ -1,9 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import "../../helpers/iframeLoader.js";
+import "./style.css";
 
 export default function Editor() {
   const [pageList, setPageList] = useState([]);
   const [newPageName, setNewPageName] = useState("");
+  const iframeRef = useRef(null);
+
+  const currentPage = "/site/index.html";
+
+  useEffect(() => {
+    init(currentPage);
+  }, []);
+
+  const init = (page) => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    open(page, iframe);
+    loadPageList();
+  };
+
+  const open = (page, iframe) => {
+    const pagePath = `../${page}`;
+
+    iframe.load(pagePath, () => {
+      console.log(pagePath);
+    });
+  };
 
   const loadPageList = () => {
     axios
@@ -13,8 +38,6 @@ export default function Editor() {
   };
 
   const createNewPage = () => {
-    console.log();
-
     axios
       .post("http://localhost:3000/pages/create", { name: newPageName })
       .then(() => loadPageList())
@@ -28,13 +51,9 @@ export default function Editor() {
       .catch(() => alert("Page not exists"));
   };
 
-  useEffect(() => {
-    loadPageList();
-  }, []);
-
   return (
     <>
-      <input
+      {/* <input
         type="text"
         value={newPageName}
         onChange={(e) => setNewPageName(e.target.value)}
@@ -48,7 +67,8 @@ export default function Editor() {
             (x)
           </a>
         </h2>
-      ))}
+      ))} */}
+      <iframe ref={iframeRef}></iframe>
     </>
   );
 }
