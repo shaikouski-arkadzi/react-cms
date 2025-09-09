@@ -26,7 +26,33 @@ export default function Editor() {
     const pagePath = `../${page}`;
 
     iframe.load(pagePath, () => {
-      console.log(pagePath);
+      const body = iframe.contentDocument.body;
+      let textNodes = [];
+
+      // Рекурсивно находим текстовые узлы и игнорируем пусты ноды
+      function recursy(element) {
+        element.childNodes.forEach((node) => {
+          if (
+            node.nodeName === "#text" &&
+            node.nodeValue.replace(/\s+/g, "").length > 0
+          ) {
+            textNodes.push(node);
+          } else {
+            recursy(node);
+          }
+        });
+      }
+
+      recursy(body);
+
+      textNodes.forEach((node) => {
+        // Создаем обертку вокруг ноды для редактирования текста
+        // Обертка будет только в админке
+        const wrapper = iframe.contentDocument.createElement("text-editor");
+        node.parentNode.replaceChild(wrapper, node);
+        wrapper.appendChild(node);
+        wrapper.contentEditable = "true";
+      });
     });
   };
 
