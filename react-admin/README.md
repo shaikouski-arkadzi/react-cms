@@ -1,12 +1,1 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+// TODO: Перед тем, как передавать нашу страницу в iFrame, мы должны пройтись по элементам и обозначить текстовые узлы, не запуская JavaScript на странице. То есть это будет самая первоначальная структура, которая у нас должна отображаться на странице. После этого мы должны сохранить две копии нашего дом-дерева. Одна из них не будет подвергаться изменениям от сторонних JavaScript скриптов, то есть то же самое, что у нас было вот здесь с тайлером. А вторая будет передаваться в iFrame, не будет изменена этими скриптами. Таким образом, у нас получится чистая копия, которая вообще содержит точно такую же структуру, как она у нас была в твердке, и загрязненная копия, которая у нас уже подвержена работе скриптов, и в ней что-то может поменяться. А вот затем мы с вами будем отслеживать все изменения в iFrame и в чистой копии делать нужные нам изменения. То есть, опять же повторюсь, при векторе нам попадает загрязненная копия, мы в ней какие-то изменения вносим, и одновременно у нас идет синхронизация с чистой копией, и в чистой копии происходят точно такие же изменения.
