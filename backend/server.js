@@ -1,5 +1,6 @@
 const express = require("express");
 const pagesRouter = require("./routes/pages");
+const { dir } = require("./config");
 
 const app = express();
 const port = 3000;
@@ -16,6 +17,8 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+app.use(express.static(dir));
 
 app.use("/pages", pagesRouter);
 
