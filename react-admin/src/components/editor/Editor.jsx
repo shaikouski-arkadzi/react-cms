@@ -7,53 +7,126 @@ export default function Editor() {
   const [pageList, setPageList] = useState([]);
   const [newPageName, setNewPageName] = useState("");
   const iframeRef = useRef(null);
+  const virtualDomRef = useRef(null);
 
-  const currentPage = "/site/index.html";
+  const currentPage = "index.html";
 
   useEffect(() => {
     init(currentPage);
   }, []);
 
   const init = (page) => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-
-    open(page, iframe);
+    open(page);
     loadPageList();
   };
 
-  const open = (page, iframe) => {
-    const pagePath = `../${page}`;
+  /**
+   * Создаем 2 страницы
+   * Первая нужная для редактирования(чистый html без влияния скриптов)
+   * Редактируем страницу исходную, до загрузки в iFrame
+   * Вторую страницу подаем в iFrame для открытия
+   * Изменяя что-то в iFrame, дублируем изменения в чистый (первый) html
+   */
+  const open = async (page) => {
+    const res = await axios.get(`http://localhost:3000/${page}`);
+    const dom = wrapTextNode(parseStringToDom(res.data));
+    virtualDomRef.current = dom;
+    let html = serializeDOMToString(dom);
+    // В html изменяем все пути чтоб читало с сервера бэка, а не с фронтового
+    html = makePathsAbsolute(html);
 
-    iframe.load(pagePath, () => {
-      const body = iframe.contentDocument.body;
-      let textNodes = [];
+    // подставляем прямо в iframe
+    iframeRef.current.srcdoc = html;
+  };
 
-      // Рекурсивно находим текстовые узлы и игнорируем пусты ноды
-      function recursy(element) {
-        element.childNodes.forEach((node) => {
-          if (
-            node.nodeName === "#text" &&
-            node.nodeValue.replace(/\s+/g, "").length > 0
-          ) {
-            textNodes.push(node);
-          } else {
-            recursy(node);
-          }
-        });
-      }
+  const parseStringToDom = (string) => {
+    const parser = new DOMParser();
+    return parser.parseFromString(string, "text/html");
+  };
 
-      recursy(body);
+  const wrapTextNode = (dom) => {
+    const body = dom.body;
+    let textNodes = [];
 
-      textNodes.forEach((node) => {
-        // Создаем обертку вокруг ноды для редактирования текста
-        // Обертка будет только в админке
-        const wrapper = iframe.contentDocument.createElement("text-editor");
-        node.parentNode.replaceChild(wrapper, node);
-        wrapper.appendChild(node);
-        wrapper.contentEditable = "true";
+    // Рекурсивно находим текстовые узлы и игнорируем пусты ноды
+    function recursy(element) {
+      element.childNodes.forEach((node) => {
+        if (
+          node.nodeName === "#text" &&
+          node.nodeValue.replace(/\s+/g, "").length > 0
+        ) {
+          textNodes.push(node);
+        } else {
+          recursy(node);
+        }
       });
+    }
+
+    recursy(body);
+
+    textNodes.forEach((node, i) => {
+      // Создаем обертку вокруг ноды для редактирования текста
+      // Обертка будет только в админке
+      const wrapper = dom.createElement("text-editor");
+      node.parentNode.replaceChild(wrapper, node);
+      wrapper.appendChild(node);
+      wrapper.setAttribute("nodeid", i);
     });
+
+    return dom;
+  };
+
+  const enableEditing = () => {
+    if (iframeRef.current.contentDocument) {
+      iframeRef.current.contentDocument.body
+        .querySelectorAll("text-editor")
+        .forEach((element) => {
+          element.contentEditable = "true";
+          element.addEventListener("input", () => {
+            onTextEdit(element);
+          });
+        });
+    }
+  };
+
+  function makePathsAbsolute(html, baseUrl = "http://localhost:3000/") {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    doc.querySelectorAll("*").forEach((el) => {
+      for (let attr of el.attributes) {
+        const name = attr.name;
+        const value = attr.value;
+
+        if (
+          (["src", "href", "action"].includes(name) || name.endsWith("src")) &&
+          value
+        ) {
+          if (!/^(https?:)?\/\//.test(value)) {
+            const newValue =
+              baseUrl.replace(/\/$/, "") + "/" + value.replace(/^\/+/, "");
+            el.setAttribute(name, newValue);
+          }
+        }
+      }
+    });
+
+    return doc.documentElement.outerHTML;
+  }
+
+  // Когда вносим изменения в грязную копию(которая отображается в iframe),
+  // Находим такой же узел по nodeid в чистой(temp файл)
+  // И дублирем туда изменения
+  const onTextEdit = (element) => {
+    const id = element.getAttribute("nodeid");
+    virtualDomRef.current.body.querySelector(`[nodeid="${id}"]`).innerHTML =
+      element.innerHTML;
+    console.log(virtualDomRef.current);
+  };
+
+  const serializeDOMToString = (dom) => {
+    const serializer = new XMLSerializer();
+    return serializer.serializeToString(dom);
   };
 
   const loadPageList = () => {
@@ -94,7 +167,7 @@ export default function Editor() {
           </a>
         </h2>
       ))} */}
-      <iframe ref={iframeRef}></iframe>
+      <iframe onLoad={() => enableEditing()} ref={iframeRef}></iframe>
     </>
   );
 }
