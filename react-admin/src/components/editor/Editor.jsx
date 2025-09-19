@@ -76,6 +76,12 @@ export default function Editor() {
     return dom;
   };
 
+  const unwrapTextNodes = (dom) => {
+    dom.body.querySelectorAll("text-editor").forEach((element) => {
+      element.parentNode.replaceChild(element.firstChild, element);
+    });
+  };
+
   const enableEditing = () => {
     if (iframeRef.current.contentDocument) {
       iframeRef.current.contentDocument.body
@@ -121,12 +127,21 @@ export default function Editor() {
     const id = element.getAttribute("nodeid");
     virtualDomRef.current.body.querySelector(`[nodeid="${id}"]`).innerHTML =
       element.innerHTML;
-    console.log(virtualDomRef.current);
   };
 
   const serializeDOMToString = (dom) => {
     const serializer = new XMLSerializer();
     return serializer.serializeToString(dom);
+  };
+
+  const saveChanges = () => {
+    const newDom = virtualDomRef.current.cloneNode(virtualDomRef.current);
+    unwrapTextNodes(newDom);
+    const html = serializeDOMToString(newDom);
+    axios.post("http://localhost:3000/pages/save", {
+      pageName: currentPage,
+      html,
+    });
   };
 
   const loadPageList = () => {
@@ -167,6 +182,7 @@ export default function Editor() {
           </a>
         </h2>
       ))} */}
+      <button onClick={saveChanges}>Save</button>
       <iframe onLoad={() => enableEditing()} ref={iframeRef}></iframe>
     </>
   );
