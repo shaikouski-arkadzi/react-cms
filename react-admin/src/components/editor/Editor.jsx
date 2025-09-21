@@ -1,6 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "../../helpers/iframeLoader.js";
+import {
+  makePathsAbsolute,
+  parseStringToDom,
+  serializeDOMToString,
+  wrapTextNode,
+  unwrapTextNodes,
+} from "../../helpers/dom-helper.js";
 import "./style.css";
 
 export default function Editor() {
@@ -39,49 +46,6 @@ export default function Editor() {
     iframeRef.current.srcdoc = html;
   };
 
-  const parseStringToDom = (string) => {
-    const parser = new DOMParser();
-    return parser.parseFromString(string, "text/html");
-  };
-
-  const wrapTextNode = (dom) => {
-    const body = dom.body;
-    let textNodes = [];
-
-    // Рекурсивно находим текстовые узлы и игнорируем пусты ноды
-    function recursy(element) {
-      element.childNodes.forEach((node) => {
-        if (
-          node.nodeName === "#text" &&
-          node.nodeValue.replace(/\s+/g, "").length > 0
-        ) {
-          textNodes.push(node);
-        } else {
-          recursy(node);
-        }
-      });
-    }
-
-    recursy(body);
-
-    textNodes.forEach((node, i) => {
-      // Создаем обертку вокруг ноды для редактирования текста
-      // Обертка будет только в админке
-      const wrapper = dom.createElement("text-editor");
-      node.parentNode.replaceChild(wrapper, node);
-      wrapper.appendChild(node);
-      wrapper.setAttribute("nodeid", i);
-    });
-
-    return dom;
-  };
-
-  const unwrapTextNodes = (dom) => {
-    dom.body.querySelectorAll("text-editor").forEach((element) => {
-      element.parentNode.replaceChild(element.firstChild, element);
-    });
-  };
-
   const enableEditing = () => {
     if (iframeRef.current.contentDocument) {
       iframeRef.current.contentDocument.body
@@ -95,31 +59,6 @@ export default function Editor() {
     }
   };
 
-  function makePathsAbsolute(html, baseUrl = "http://localhost:3000/") {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
-
-    doc.querySelectorAll("*").forEach((el) => {
-      for (let attr of el.attributes) {
-        const name = attr.name;
-        const value = attr.value;
-
-        if (
-          (["src", "href", "action"].includes(name) || name.endsWith("src")) &&
-          value
-        ) {
-          if (!/^(https?:)?\/\//.test(value)) {
-            const newValue =
-              baseUrl.replace(/\/$/, "") + "/" + value.replace(/^\/+/, "");
-            el.setAttribute(name, newValue);
-          }
-        }
-      }
-    });
-
-    return doc.documentElement.outerHTML;
-  }
-
   // Когда вносим изменения в грязную копию(которая отображается в iframe),
   // Находим такой же узел по nodeid в чистой(temp файл)
   // И дублирем туда изменения
@@ -127,11 +66,6 @@ export default function Editor() {
     const id = element.getAttribute("nodeid");
     virtualDomRef.current.body.querySelector(`[nodeid="${id}"]`).innerHTML =
       element.innerHTML;
-  };
-
-  const serializeDOMToString = (dom) => {
-    const serializer = new XMLSerializer();
-    return serializer.serializeToString(dom);
   };
 
   const saveChanges = () => {
