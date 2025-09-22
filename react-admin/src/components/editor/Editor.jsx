@@ -59,6 +59,23 @@ export default function Editor() {
     }
   };
 
+  const injectStyles = () => {
+    if (iframeRef.current.contentDocument) {
+      const style = iframeRef.current.contentDocument.createElement("style");
+      style.innerHTML = `
+        text-editor:hover {
+          outline: 3px solid orange;
+          outline-offset: 8px;
+        }
+        text-editor:focus {
+          outline: 3px solid red;
+          outline-offset: 8px;
+        }
+      `;
+      iframeRef.current.contentDocument.head.appendChild(style);
+    }
+  };
+
   // Когда вносим изменения в грязную копию(которая отображается в iframe),
   // Находим такой же узел по nodeid в чистой(temp файл)
   // И дублирем туда изменения
@@ -66,6 +83,11 @@ export default function Editor() {
     const id = element.getAttribute("nodeid");
     virtualDomRef.current.body.querySelector(`[nodeid="${id}"]`).innerHTML =
       element.innerHTML;
+  };
+
+  const iframeLoad = () => {
+    enableEditing();
+    injectStyles();
   };
 
   const saveChanges = () => {
@@ -117,7 +139,7 @@ export default function Editor() {
         </h2>
       ))} */}
       <button onClick={saveChanges}>Save</button>
-      <iframe onLoad={() => enableEditing()} ref={iframeRef}></iframe>
+      <iframe onLoad={iframeLoad} ref={iframeRef}></iframe>
     </>
   );
 }
