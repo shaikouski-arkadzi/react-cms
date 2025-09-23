@@ -60,7 +60,7 @@ export default function Editor() {
           });
           element.addEventListener("blur", () => {
             element.contentEditable = "false";
-            element.EventListener("input", () => {
+            element.removeEventListener("input", () => {
               onTextEdit(element);
             });
           });
