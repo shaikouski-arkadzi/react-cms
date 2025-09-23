@@ -51,9 +51,18 @@ export default function Editor() {
       iframeRef.current.contentDocument.body
         .querySelectorAll("text-editor")
         .forEach((element) => {
-          element.contentEditable = "true";
-          element.addEventListener("input", () => {
-            onTextEdit(element);
+          element.addEventListener("click", () => {
+            element.contentEditable = "true";
+            element.focus();
+            element.addEventListener("input", () => {
+              onTextEdit(element);
+            });
+          });
+          element.addEventListener("blur", () => {
+            element.contentEditable = "false";
+            element.EventListener("input", () => {
+              onTextEdit(element);
+            });
           });
         });
     }
@@ -67,7 +76,7 @@ export default function Editor() {
           outline: 3px solid orange;
           outline-offset: 8px;
         }
-        text-editor:focus {
+        text-editor[contenteditable="true"]:focus {
           outline: 3px solid red;
           outline-offset: 8px;
         }
