@@ -64,6 +64,11 @@ export default function Editor() {
               onTextEdit(element);
             });
           });
+          element.addEventListener("keypress", () => {
+            if (event.keyCode === 13) {
+              element.blur();
+            }
+          });
         });
     }
   };
