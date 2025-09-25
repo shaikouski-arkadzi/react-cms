@@ -69,6 +69,20 @@ export default function Editor() {
               element.blur();
             }
           });
+          // Редактирование ссылок правой кнопкой мыши
+          if (
+            element.parentNode.nodeName === "A" ||
+            element.parentNode.nodeName === "BUTTON"
+          ) {
+            element.addEventListener("contextmenu", (event) => {
+              event.preventDefault();
+              element.contentEditable = "true";
+              element.focus();
+              element.addEventListener("input", () => {
+                onTextEdit(element);
+              });
+            });
+          }
         });
     }
   };
