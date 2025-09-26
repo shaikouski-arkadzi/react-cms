@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useIframeTextEditor } from "../../hooks/useIframeTextEditor.js";
 import "../../helpers/iframeLoader.js";
 import {
   makePathsAbsolute,
@@ -15,6 +16,8 @@ export default function Editor() {
   const [newPageName, setNewPageName] = useState("");
   const iframeRef = useRef(null);
   const virtualDomRef = useRef(null);
+
+  const { enableEditing } = useIframeTextEditor(iframeRef, virtualDomRef);
 
   const currentPage = "index.html";
 
@@ -46,47 +49,6 @@ export default function Editor() {
     iframeRef.current.srcdoc = html;
   };
 
-  const enableEditing = () => {
-    if (iframeRef.current.contentDocument) {
-      iframeRef.current.contentDocument.body
-        .querySelectorAll("text-editor")
-        .forEach((element) => {
-          element.addEventListener("click", () => {
-            element.contentEditable = "true";
-            element.focus();
-            element.addEventListener("input", () => {
-              onTextEdit(element);
-            });
-          });
-          element.addEventListener("blur", () => {
-            element.contentEditable = "false";
-            element.removeEventListener("input", () => {
-              onTextEdit(element);
-            });
-          });
-          element.addEventListener("keypress", () => {
-            if (event.keyCode === 13) {
-              element.blur();
-            }
-          });
-          // Редактирование ссылок правой кнопкой мыши
-          if (
-            element.parentNode.nodeName === "A" ||
-            element.parentNode.nodeName === "BUTTON"
-          ) {
-            element.addEventListener("contextmenu", (event) => {
-              event.preventDefault();
-              element.contentEditable = "true";
-              element.focus();
-              element.addEventListener("input", () => {
-                onTextEdit(element);
-              });
-            });
-          }
-        });
-    }
-  };
-
   const injectStyles = () => {
     if (iframeRef.current.contentDocument) {
       const style = iframeRef.current.contentDocument.createElement("style");
@@ -102,15 +64,6 @@ export default function Editor() {
       `;
       iframeRef.current.contentDocument.head.appendChild(style);
     }
-  };
-
-  // Когда вносим изменения в грязную копию(которая отображается в iframe),
-  // Находим такой же узел по nodeid в чистой(temp файл)
-  // И дублирем туда изменения
-  const onTextEdit = (element) => {
-    const id = element.getAttribute("nodeid");
-    virtualDomRef.current.body.querySelector(`[nodeid="${id}"]`).innerHTML =
-      element.innerHTML;
   };
 
   const iframeLoad = () => {
