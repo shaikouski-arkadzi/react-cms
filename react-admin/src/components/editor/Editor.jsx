@@ -10,6 +10,7 @@ import {
   unwrapTextNodes,
 } from "../../helpers/dom-helper.js";
 import "./style.css";
+import { ManagePanel } from "../managePanel";
 
 export default function Editor() {
   const [pageList, setPageList] = useState([]);
@@ -71,16 +72,6 @@ export default function Editor() {
     injectStyles();
   };
 
-  const saveChanges = () => {
-    const newDom = virtualDomRef.current.cloneNode(virtualDomRef.current);
-    unwrapTextNodes(newDom);
-    const html = serializeDOMToString(newDom);
-    axios.post("http://localhost:3000/pages/save", {
-      pageName: currentPage,
-      html,
-    });
-  };
-
   const loadPageList = () => {
     axios
       .get("http://localhost:3000/pages")
@@ -119,7 +110,7 @@ export default function Editor() {
           </a>
         </h2>
       ))} */}
-      <button onClick={saveChanges}>Save</button>
+      <ManagePanel virtualDomRef={virtualDomRef} currentPage={currentPage} />
       <iframe onLoad={iframeLoad} ref={iframeRef}></iframe>
     </>
   );
