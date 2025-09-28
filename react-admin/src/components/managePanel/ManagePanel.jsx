@@ -5,7 +5,7 @@ import {
 } from "../../helpers/dom-helper";
 import "./style.css";
 
-export default function ManagePanel({ virtualDomRef, currentPage }) {
+export default function ManagePanel({ virtualDomRef, currentPage, setOpen }) {
   const saveChanges = () => {
     const newDom = virtualDomRef.current.cloneNode(virtualDomRef.current);
     unwrapTextNodes(newDom);
@@ -18,6 +18,9 @@ export default function ManagePanel({ virtualDomRef, currentPage }) {
 
   return (
     <div className="panel">
+      <button className="blue-btn" onClick={setOpen}>
+        Show Page List
+      </button>
       <button className="blue-btn" onClick={saveChanges}>
         Save
       </button>

@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { ManagePanel } from "../managePanel";
+import { Overlay } from "../overlay";
 import { useIframeTextEditor } from "../../hooks/useIframeTextEditor.js";
 import "../../helpers/iframeLoader.js";
 import {
@@ -7,14 +9,13 @@ import {
   parseStringToDom,
   serializeDOMToString,
   wrapTextNode,
-  unwrapTextNodes,
 } from "../../helpers/dom-helper.js";
 import "./style.css";
-import { ManagePanel } from "../managePanel";
 
 export default function Editor() {
   const [pageList, setPageList] = useState([]);
   const [newPageName, setNewPageName] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const iframeRef = useRef(null);
   const virtualDomRef = useRef(null);
 
@@ -110,7 +111,12 @@ export default function Editor() {
           </a>
         </h2>
       ))} */}
-      <ManagePanel virtualDomRef={virtualDomRef} currentPage={currentPage} />
+      <Overlay list={pageList} open={sidebarOpen} setOpen={setSidebarOpen} />
+      <ManagePanel
+        virtualDomRef={virtualDomRef}
+        currentPage={currentPage}
+        setOpen={setSidebarOpen}
+      />
       <iframe onLoad={iframeLoad} ref={iframeRef}></iframe>
     </>
   );

@@ -3,6 +3,7 @@
   padding: 12px;
   height: var(--panel-height);
   border-bottom: 1px solid black;
+  gap: 15px;
 }
 
 .blue-btn {
