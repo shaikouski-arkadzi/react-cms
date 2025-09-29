@@ -1,6 +1,6 @@
 import "./style.css";
 
-export default function Overlay({ open, setOpen, list }) {
+export default function Overlay({ open, setOpen, list, redirect }) {
   return (
     <aside className={`sidebar ${open ? "show" : ""}`}>
       <header className="sidebar-header">
@@ -13,7 +13,15 @@ export default function Overlay({ open, setOpen, list }) {
       <div className="sidebar-content">
         <ul>
           {list.map((item) => (
-            <li key={item}>{item}</li>
+            <li
+              onClick={() => {
+                redirect(item);
+                setOpen(false);
+              }}
+              key={item}
+            >
+              {item}
+            </li>
           ))}
         </ul>
       </div>

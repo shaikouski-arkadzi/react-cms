@@ -111,7 +111,12 @@ export default function Editor() {
           </a>
         </h2>
       ))} */}
-      <Overlay list={pageList} open={sidebarOpen} setOpen={setSidebarOpen} />
+      <Overlay
+        list={pageList}
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+        redirect={init}
+      />
       <ManagePanel
         virtualDomRef={virtualDomRef}
         currentPage={currentPage}
