@@ -14,7 +14,6 @@ import "./style.css";
 
 export default function Editor() {
   const [pageList, setPageList] = useState([]);
-  const [newPageName, setNewPageName] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const iframeRef = useRef(null);
   const virtualDomRef = useRef(null);
@@ -80,37 +79,8 @@ export default function Editor() {
       .catch(() => alert("Error geting pages!"));
   };
 
-  const createNewPage = () => {
-    axios
-      .post("http://localhost:3000/pages/create", { name: newPageName })
-      .then(() => loadPageList())
-      .catch(() => alert("Page already exists!"));
-  };
-
-  const deletePage = (page) => {
-    axios
-      .post("http://localhost:3000/pages/delete", { name: page })
-      .then(() => loadPageList())
-      .catch(() => alert("Page not exists"));
-  };
-
   return (
     <>
-      {/* <input
-        type="text"
-        value={newPageName}
-        onChange={(e) => setNewPageName(e.target.value)}
-      />
-      <button onClick={createNewPage}>Create page</button>
-
-      {pageList.map((page, i) => (
-        <h2 key={i}>
-          {page}
-          <a href="#" onClick={() => deletePage(page)}>
-            (x)
-          </a>
-        </h2>
-      ))} */}
       <Overlay
         list={pageList}
         open={sidebarOpen}
