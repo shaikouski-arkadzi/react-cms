@@ -13,7 +13,6 @@ import {
 import "./style.css";
 
 export default function Editor() {
-  const [pageList, setPageList] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const iframeRef = useRef(null);
   const virtualDomRef = useRef(null);
@@ -23,13 +22,8 @@ export default function Editor() {
   const currentPage = "index.html";
 
   useEffect(() => {
-    init(currentPage);
+    open(currentPage);
   }, []);
-
-  const init = (page) => {
-    open(page);
-    loadPageList();
-  };
 
   /**
    * Создаем 2 страницы
@@ -72,21 +66,9 @@ export default function Editor() {
     injectStyles();
   };
 
-  const loadPageList = () => {
-    axios
-      .get("http://localhost:3000/pages")
-      .then((res) => setPageList(res.data))
-      .catch(() => alert("Error geting pages!"));
-  };
-
   return (
     <>
-      <Overlay
-        list={pageList}
-        open={sidebarOpen}
-        setOpen={setSidebarOpen}
-        redirect={init}
-      />
+      <Overlay open={sidebarOpen} setOpen={setSidebarOpen} redirect={open} />
       <ManagePanel
         virtualDomRef={virtualDomRef}
         currentPage={currentPage}

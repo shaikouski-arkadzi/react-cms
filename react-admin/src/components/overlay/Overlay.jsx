@@ -1,6 +1,23 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import "./style.css";
 
-export default function Overlay({ open, setOpen, list, redirect }) {
+export default function Overlay({ open, setOpen, redirect }) {
+  const [pageList, setPageList] = useState([]);
+
+  useEffect(() => {
+    loadPageList();
+  }, []);
+
+  const loadPageList = async () => {
+    try {
+      const result = await axios.get("http://localhost:3000/pages");
+      setPageList(result.data);
+    } catch {
+      alert("Error geting pages!");
+    }
+  };
+
   return (
     <aside className={`sidebar ${open ? "show" : ""}`}>
       <header className="sidebar-header">
@@ -12,7 +29,7 @@ export default function Overlay({ open, setOpen, list, redirect }) {
 
       <div className="sidebar-content">
         <ul>
-          {list.map((item) => (
+          {pageList.map((item) => (
             <li
               onClick={() => {
                 redirect(item);
