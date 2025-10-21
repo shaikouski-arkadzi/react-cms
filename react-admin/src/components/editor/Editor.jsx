@@ -11,9 +11,12 @@ import {
   wrapTextNode,
 } from "../../helpers/dom-helper.js";
 import "./style.css";
+import EditorMeta from "../editorMeta/EditorMeta.jsx";
 
 export default function Editor() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+
   const iframeRef = useRef(null);
   const virtualDomRef = useRef(null);
 
@@ -73,7 +76,9 @@ export default function Editor() {
         virtualDomRef={virtualDomRef}
         currentPage={currentPage}
         setOpen={setSidebarOpen}
+        setModalOpen={setModalOpen}
       />
+      <EditorMeta isModalOpen={isModalOpen} setModalOpen={setModalOpen} />
       <iframe onLoad={iframeLoad} ref={iframeRef}></iframe>
     </>
   );

@@ -5,7 +5,12 @@ import {
 } from "../../helpers/dom-helper";
 import "./style.css";
 
-export default function ManagePanel({ virtualDomRef, currentPage, setOpen }) {
+export default function ManagePanel({
+  virtualDomRef,
+  currentPage,
+  setOpen,
+  setModalOpen,
+}) {
   const saveChanges = () => {
     const newDom = virtualDomRef.current.cloneNode(virtualDomRef.current);
     unwrapTextNodes(newDom);
@@ -23,6 +28,9 @@ export default function ManagePanel({ virtualDomRef, currentPage, setOpen }) {
       </button>
       <button className="blue-btn" onClick={saveChanges}>
         Save
+      </button>
+      <button className="blue-btn" onClick={() => setModalOpen(true)}>
+        Change Meta
       </button>
     </div>
   );
