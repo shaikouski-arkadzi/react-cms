@@ -1,0 +1,31 @@
+.meta-form {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.meta-form input,
+.meta-form textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 15px;
+  background: #f9fafb;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  resize: none;
+}
+
+.meta-form input:focus,
+.meta-form textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.meta-form input::placeholder,
+.meta-form textarea::placeholder {
+  color: #9ca3af;
+}

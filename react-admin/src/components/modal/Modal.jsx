@@ -15,10 +15,10 @@ export default function Modal({ open, title, children, onClose, onConfirm }) {
 
         <div className="modal-footer">
           <button className="modal-btn cancel" onClick={onClose}>
-            Отмена
+            Cancel
           </button>
           <button className="modal-btn confirm" onClick={onConfirm}>
-            Подтвердить
+            Confirm
           </button>
         </div>
       </div>

@@ -69,3 +69,32 @@ export const parseStringToDom = (string) => {
   const parser = new DOMParser();
   return parser.parseFromString(string, "text/html");
 };
+
+export const getTitleTag = (dom) => {
+  const head = dom.head;
+  let title = dom.head.querySelector("title");
+  if (!title) {
+    title = head.appendChild(dom.createElement("title"));
+  }
+  return title;
+};
+
+export const getKeywordsTag = (dom) => {
+  const head = dom.head;
+  let keywords = head.querySelector('meta[name="keywords"]');
+  if (!keywords) {
+    keywords = head.appendChild(dom.createElement("meta"));
+    keywords.setAttribute("name", "keywords");
+  }
+  return keywords;
+};
+
+export const getDescriptionTag = (dom) => {
+  const head = dom.head;
+  let description = head.querySelector('meta[name="description"]');
+  if (!description) {
+    description = head.appendChild(dom.createElement("meta"));
+    description.setAttribute("name", "description");
+  }
+  return description;
+};

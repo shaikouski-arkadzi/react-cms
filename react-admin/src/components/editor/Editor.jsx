@@ -78,7 +78,11 @@ export default function Editor() {
         setOpen={setSidebarOpen}
         setModalOpen={setModalOpen}
       />
-      <EditorMeta isModalOpen={isModalOpen} setModalOpen={setModalOpen} />
+      <EditorMeta
+        isModalOpen={isModalOpen}
+        setModalOpen={setModalOpen}
+        virtualDom={virtualDomRef.current}
+      />
       <iframe onLoad={iframeLoad} ref={iframeRef}></iframe>
     </>
   );
