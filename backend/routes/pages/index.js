@@ -5,6 +5,7 @@ const createPage = require("./createPage");
 const deletePage = require("./deletePage");
 const saveTempPage = require("./saveTempPage");
 const saveChanges = require("./saveChanges");
+const { uploadMiddleware, uploadImage } = require("./uploadImage");
 
 const router = express.Router();
 
@@ -25,5 +26,8 @@ router.post("/save", saveChanges);
 
 // POST /pages/delete
 router.post("/delete", deletePage);
+
+// POST /pages/uploadImage
+router.post("/uploadImage", uploadMiddleware, uploadImage);
 
 module.exports = router;
