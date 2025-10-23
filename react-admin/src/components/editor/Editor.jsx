@@ -2,16 +2,18 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { ManagePanel } from "../managePanel";
 import { Overlay } from "../overlay";
+import { EditorMeta } from "../editorMeta";
 import { useIframeTextEditor } from "../../hooks/useIframeTextEditor.js";
+import { useIframeImageEditor } from "../../hooks/useIframeImageEditor.js";
 import "../../helpers/iframeLoader.js";
 import {
   makePathsAbsolute,
   parseStringToDom,
   serializeDOMToString,
+  wrapImages,
   wrapTextNode,
 } from "../../helpers/dom-helper.js";
 import "./style.css";
-import EditorMeta from "../editorMeta/EditorMeta.jsx";
 
 export default function Editor() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -21,6 +23,7 @@ export default function Editor() {
   const virtualDomRef = useRef(null);
 
   const { enableEditing } = useIframeTextEditor(iframeRef, virtualDomRef);
+  const { enableEditingImg } = useIframeImageEditor(iframeRef, virtualDomRef);
 
   const currentPage = "index.html";
 
@@ -37,7 +40,9 @@ export default function Editor() {
    */
   const open = async (page) => {
     const res = await axios.get(`http://localhost:3000/${page}`);
-    const dom = wrapTextNode(parseStringToDom(res.data));
+    const domWrappingText = wrapTextNode(parseStringToDom(res.data));
+    const domWrappingImg = wrapImages(domWrappingText);
+    const dom = domWrappingImg;
     virtualDomRef.current = dom;
     let html = serializeDOMToString(dom);
     // В html изменяем все пути чтоб читало с сервера бэка, а не с фронтового
@@ -59,6 +64,11 @@ export default function Editor() {
           outline: 3px solid red;
           outline-offset: 8px;
         }
+        [editableimgid]:hover {
+          cursor: pointer;
+          outline: 3px solid orange;
+          outline-offset: 8px;
+        }
       `;
       iframeRef.current.contentDocument.head.appendChild(style);
     }
@@ -66,6 +76,7 @@ export default function Editor() {
 
   const iframeLoad = () => {
     enableEditing();
+    enableEditingImg();
     injectStyles();
   };
 
@@ -83,6 +94,7 @@ export default function Editor() {
         setModalOpen={setModalOpen}
         virtualDom={virtualDomRef.current}
       />
+      <input id="img-upload" type="file" accept="image/*"></input>
       <iframe onLoad={iframeLoad} ref={iframeRef}></iframe>
     </>
   );

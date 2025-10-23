@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   serializeDOMToString,
+  unwrapImages,
   unwrapTextNodes,
 } from "../../helpers/dom-helper";
 import "./style.css";
@@ -14,7 +15,10 @@ export default function ManagePanel({
   const saveChanges = () => {
     const newDom = virtualDomRef.current.cloneNode(virtualDomRef.current);
     unwrapTextNodes(newDom);
+    unwrapImages(newDom);
+
     const html = serializeDOMToString(newDom);
+
     axios.post("http://localhost:3000/pages/save", {
       pageName: currentPage,
       html,

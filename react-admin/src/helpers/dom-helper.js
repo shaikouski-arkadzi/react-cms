@@ -98,3 +98,17 @@ export const getDescriptionTag = (dom) => {
   }
   return description;
 };
+
+export const wrapImages = (dom) => {
+  dom.body.querySelectorAll("img").forEach((img, i) => {
+    img.setAttribute("editableimgid", i);
+  });
+
+  return dom;
+};
+
+export const unwrapImages = (dom) => {
+  dom.body.querySelectorAll("[editableimgid]").forEach((img) => {
+    img.removeAttribute("editableimgid");
+  });
+};
