@@ -6,7 +6,3 @@ iframe {
   width: 100%;
   height: calc(100vh - var(--panel-height));
 }
-
-#img-upload {
-  display: none;
-}

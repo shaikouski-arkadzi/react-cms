@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import axios from "axios";
-import { ManagePanel } from "../managePanel";
-import { Overlay } from "../overlay";
-import { EditorMeta } from "../editorMeta";
+import Tools from "../tools";
 import { useIframeTextEditor } from "../../hooks/useIframeTextEditor.js";
 import { useIframeImageEditor } from "../../hooks/useIframeImageEditor.js";
 import "../../helpers/iframeLoader.js";
@@ -16,9 +14,6 @@ import {
 import "./style.css";
 
 export default function Editor() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
-
   const iframeRef = useRef(null);
   const virtualDomRef = useRef(null);
 
@@ -82,19 +77,7 @@ export default function Editor() {
 
   return (
     <>
-      <Overlay open={sidebarOpen} setOpen={setSidebarOpen} redirect={open} />
-      <ManagePanel
-        virtualDomRef={virtualDomRef}
-        currentPage={currentPage}
-        setOpen={setSidebarOpen}
-        setModalOpen={setModalOpen}
-      />
-      <EditorMeta
-        isModalOpen={isModalOpen}
-        setModalOpen={setModalOpen}
-        virtualDom={virtualDomRef.current}
-      />
-      <input id="img-upload" type="file" accept="image/*"></input>
+      <Tools currentPage={currentPage} virtualDomRef={virtualDomRef} />
       <iframe onLoad={iframeLoad} ref={iframeRef}></iframe>
     </>
   );
