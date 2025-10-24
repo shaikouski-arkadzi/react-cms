@@ -4,6 +4,7 @@ import {
   unwrapImages,
   unwrapTextNodes,
 } from "../../helpers/dom-helper";
+import { BACKEND_URI } from "../../constants/siteStylesInIframe";
 import "./style.css";
 
 export default function ManagePanel({
@@ -19,7 +20,7 @@ export default function ManagePanel({
 
     const html = serializeDOMToString(newDom);
 
-    axios.post("http://localhost:3000/pages/save", {
+    axios.post(`${BACKEND_URI}/pages/save`, {
       pageName: currentPage,
       html,
     });

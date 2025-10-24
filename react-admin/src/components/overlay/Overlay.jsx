@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { BACKEND_URI } from "../../constants/siteStylesInIframe";
 import "./style.css";
 
 export default function Overlay({ open, setOpen, redirect }) {
@@ -11,7 +12,7 @@ export default function Overlay({ open, setOpen, redirect }) {
 
   const loadPageList = async () => {
     try {
-      const result = await axios.get("http://localhost:3000/pages");
+      const result = await axios.get(`${BACKEND_URI}/pages`);
       setPageList(result.data);
     } catch {
       alert("Error geting pages!");

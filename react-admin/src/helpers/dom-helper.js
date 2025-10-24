@@ -1,9 +1,11 @@
+import { BACKEND_URI } from "../constants/siteStylesInIframe";
+
 export const serializeDOMToString = (dom) => {
   const serializer = new XMLSerializer();
   return serializer.serializeToString(dom);
 };
 
-export const makePathsAbsolute = (html, baseUrl = "http://localhost:3000/") => {
+export const makePathsAbsolute = (html, baseUrl = BACKEND_URI) => {
   const doc = parseStringToDom(html);
 
   doc.querySelectorAll("*").forEach((el) => {

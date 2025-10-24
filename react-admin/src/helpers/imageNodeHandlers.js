@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BACKEND_URI } from "../constants/siteStylesInIframe";
 
 export const clickHandler = (element, handleInput) => {
   const imgUploader = document.querySelector("#img-upload");
@@ -9,13 +10,13 @@ export const clickHandler = (element, handleInput) => {
       formData.append("image", imgUploader.files[0]);
 
       axios
-        .post("http://localhost:3000/pages/uploadImage", formData, {
+        .post(`${BACKEND_URI}/pages/uploadImage`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         })
         .then((res) => {
-          element.src = `http://localhost:3000/img/${res.data.src}`;
+          element.src = `${BACKEND_URI}/img/${res.data.src}`;
           handleInput(element);
         })
         .catch(() => console.log("Ошибка сохранения"))

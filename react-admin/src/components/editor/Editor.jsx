@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import axios from "axios";
-import Tools from "../tools";
+import { Tools } from "../tools";
 import { useIframeTextEditor } from "../../hooks/useIframeTextEditor.js";
 import { useIframeImageEditor } from "../../hooks/useIframeImageEditor.js";
 import "../../helpers/iframeLoader.js";
@@ -11,6 +11,11 @@ import {
   wrapImages,
   wrapTextNode,
 } from "../../helpers/dom-helper.js";
+import {
+  BACKEND_URI,
+  EDITOR_STYLES,
+  STARTED_PAGE,
+} from "../../constants/siteStylesInIframe.js";
 import "./style.css";
 
 export default function Editor() {
@@ -20,7 +25,7 @@ export default function Editor() {
   const { enableEditing } = useIframeTextEditor(iframeRef, virtualDomRef);
   const { enableEditingImg } = useIframeImageEditor(iframeRef, virtualDomRef);
 
-  const currentPage = "index.html";
+  const currentPage = STARTED_PAGE;
 
   useEffect(() => {
     open(currentPage);
@@ -34,7 +39,7 @@ export default function Editor() {
    * Изменяя что-то в iFrame, дублируем изменения в чистый (первый) html
    */
   const open = async (page) => {
-    const res = await axios.get(`http://localhost:3000/${page}`);
+    const res = await axios.get(`${BACKEND_URI}/${page}`);
     const domWrappingText = wrapTextNode(parseStringToDom(res.data));
     const domWrappingImg = wrapImages(domWrappingText);
     const dom = domWrappingImg;
@@ -50,21 +55,7 @@ export default function Editor() {
   const injectStyles = () => {
     if (iframeRef.current.contentDocument) {
       const style = iframeRef.current.contentDocument.createElement("style");
-      style.innerHTML = `
-        text-editor:hover {
-          outline: 3px solid orange;
-          outline-offset: 8px;
-        }
-        text-editor[contenteditable="true"]:focus {
-          outline: 3px solid red;
-          outline-offset: 8px;
-        }
-        [editableimgid]:hover {
-          cursor: pointer;
-          outline: 3px solid orange;
-          outline-offset: 8px;
-        }
-      `;
+      style.innerHTML = EDITOR_STYLES;
       iframeRef.current.contentDocument.head.appendChild(style);
     }
   };
